@@ -1,0 +1,65 @@
+---
+title: "M4Q2 Missing Data"
+author: "Taylor Rogers"
+date: '2022-06-09'
+output: html_document
+---
+
+```{r}
+#install.packages("mice")
+
+library(tidyverse)
+library(VIM)
+library(mice)
+```
+
+```{r}
+grades = read.csv("class-grades.csv")
+```
+
+```{r}
+str(grades)
+summary(grades)
+```
+
+##Question 1: Tutorial, Midterm, TakeHome, and Final
+
+```{r}
+vim_plot = aggr(grades, numbers = TRUE, prop = c(TRUE, FALSE),cex.axis=.7)
+```
+
+## Question 2: Yes, there are student with more than one piece of data missing
+
+```{r}
+grades_rowdel = grades %>% drop_na() 
+```
+
+## Question 3: 89 rows remain
+
+```{r}
+grades_coldel = grades %>% select(-Tutorial, -Midterm, -TakeHome, -Final) 
+```
+
+##Question 4: 2 columns remain
+
+##Question 5: Row-wise deletion seems more appropriate for this data set, since at least one student missed each of the assignments. There is no data left to analyze when column-wise deletion is used. 
+
+```{r}
+set.seed(123) #sets seed for random number generator
+imp_grades = mice(grades, m=5, method='pmm', printFlag=FALSE)
+#m is the number of imputations, 5 is a reasonable value as a default
+#pmm is "predictive mean matching" = imputation method for numeric data
+#printFlag reduces amount of output
+summary(imp_grades)
+```
+
+```{r}
+grades_complete = complete(imp_grades)
+```
+
+```{r}
+mean(grades_complete$Final)
+```
+
+
+##Question 6: 68.33

@@ -1,0 +1,82 @@
+---
+title: "Module 2 Assignment 2"
+author: "Taylor Rogers"
+date: '2022-05-30'
+output: html_document
+---
+
+```{r}
+#install.packages("car")
+
+library(tidyverse)
+library(tidymodels)
+library(glmnet)
+library(GGally)
+library(ggcorrplot)
+library(MASS)
+library(car)
+library(lubridate)
+library(lmtest)
+library(splines)
+```
+
+
+
+
+
+```{r}
+bike = read.csv("bike_cleaned-3.csv")
+```
+
+```{r}
+str(bike)
+summary(bike)
+```
+
+```{r}
+bike = bike %>% mutate(dteday = mdy(dteday))
+```
+
+```{r}
+bike = bike %>% mutate_if(is.character, as_factor)
+```
+
+```{r}
+bike = bike %>% mutate(hr = as_factor(hr))
+```
+
+```{r}
+lm(count ~ temp + atemp, bike)
+```
+
+```{r}
+bike_recipe = recipe(count ~ hr + temp, bike)
+
+bike_model = linear_reg() %>%
+  set_engine("lm")
+
+bike_workflow = workflow() %>%
+  add_model(bike_model) %>%
+  add_recipe(bike_recipe)
+
+bike_fit = fit(bike_workflow, bike)
+
+summary(bike_fit$fit$fit$fit)
+```
+
+```{r}
+bike_recipe = recipe(count ~ temp + atemp, bike)
+
+bike_model = linear_reg() %>%
+  set_engine("lm")
+
+bike_workflow = workflow() %>%
+  add_model(bike_model) %>%
+  add_recipe(bike_recipe)
+
+bike_fit = fit(bike_workflow, bike)
+
+summary(bike_fit$fit$fit$fit)
+```
+
+

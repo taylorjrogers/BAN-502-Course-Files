@@ -1,0 +1,68 @@
+---
+title: "Module 2 Quiz Assignment 1"
+author: "Taylor Rogers"
+date: '2022-05-26'
+output: html_document
+---
+
+```{r}
+#install.packages("lmtest")
+
+
+
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+library(lmtest)
+```
+
+```{r}
+air = airquality
+
+str(air)
+summary(air)
+```
+
+
+
+```{r}
+ggpairs(air)
+```
+```{r}
+air2 = air %>% drop_na()
+```
+
+```{r}
+ggpairs(air2)
+```
+
+```{r}
+ggplot(air, aes(x=Temp,y=Ozone)) + geom_point()
+```
+
+```{r}
+air_recipe = recipe(Ozone ~ Temp, air)
+air_recipe
+
+lm_model = linear_reg() %>%
+  set_engine("lm")
+
+lm_wflow = workflow() %>%
+  add_model(lm_model) %>%
+  add_recipe(air_recipe)
+
+lm_fit = fit(lm_wflow, air2)
+
+summary(lm_fit$fit$fit$fit)
+```
+```{r}
+confint(lm_fit$fit$fit$fit)
+```
+
+
+
+```{r}
+test_data=data.frame(Temp=c(80))
+predict(lm_fit, new_data = test_data)
+```
+
